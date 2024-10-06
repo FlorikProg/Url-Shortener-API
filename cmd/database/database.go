@@ -4,18 +4,15 @@ import (
 	"database/sql"
 	"log"
 
-	_ "modernc.org/sqlite" // Импортируем драйвер
+	_ "modernc.org/sqlite" 
 )
 
-// Функция для подключения к базе данных
 func InitDB(filepath string) *sql.DB {
-	// Используем драйвер "sqlite" вместо "sqlite3"
 	db, err := sql.Open("sqlite", filepath)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Проверим соединение
+	
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
@@ -24,7 +21,6 @@ func InitDB(filepath string) *sql.DB {
 	return db
 }
 
-// Функция для создания таблицы
 func CreateTable(db *sql.DB) {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS users (
         "id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,18 +42,16 @@ func AddLink(db *sql.DB, link string) error {
 	for {
 		code = generateRandomCode(5)
 
-		// Check if the code already exists
 		var exists bool
 		err := db.QueryRow(`SELECT EXISTS(SELECT 1 FROM users WHERE code = ?)`, code).Scan(&exists)
 		if err != nil {
 			return err
 		}
 		if !exists {
-			break // Unique code found
+			break 
 		}
 	}
 
-	// Insert the new link into the database
 	if _, err := db.Exec(`INSERT INTO users (code, original_link) VALUES (?, ?)`, code, link); err != nil {
 		return err
 	}
@@ -67,15 +61,12 @@ func AddLink(db *sql.DB, link string) error {
 }
 
 func GetLinkFromDB(db *sql.DB, code string) (string, error) {
-	// SQL-запрос для получения данных из таблицы users
 	querySQL := `SELECT original_link FROM users WHERE code = ?`
 
-	// Выполняем запрос и получаем результат
 	var link string
 	err := db.QueryRow(querySQL, code).Scan(&link)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			// Если нет результатов, возвращаем nil и сообщение
 			return "", nil
 		}
 		return "", err
@@ -88,12 +79,10 @@ func GetLinkFromDB(db *sql.DB, code string) (string, error) {
 func GetCodeFromDB(db *sql.DB, original_link string) (string, error) {
 	querySQL := `SELECT code FROM users WHERE original_link = ?`
 
-	// Выполняем запрос и получаем результат
 	var link string
 	err := db.QueryRow(querySQL, original_link).Scan(&link)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			// Если нет результатов, возвращаем nil и сообщение
 			return "", nil
 		}
 		return "", err
