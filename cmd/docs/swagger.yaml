@@ -1,0 +1,47 @@
+info:
+  contact: {}
+paths:
+  /{link}:
+    get:
+      consumes:
+      - application/json
+      description: Get user information by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get user info
+      tags:
+      - users
+  /link_create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new shortened link or perform some operation with the
+        provided link
+      parameters:
+      - description: Link to be created
+        in: query
+        name: link
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Missing link parameter
+          schema:
+            type: string
+      summary: Create a new link
+      tags:
+      - links
+swagger: "2.0"
