@@ -26,7 +26,6 @@ type LinkRequest struct {
 func CreateLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Получаем параметр link из URL
 	link := r.URL.Query().Get("link")
 	if link == "" {
 		http.Error(w, "Missing link parameter", http.StatusBadRequest)
@@ -41,7 +40,6 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Error adding link:", err)
 	}
 
-	// Логируем или используем полученный линк
 	log.Println("Received link:", link)
 
 	output_code, err := database.GetCodeFromDB(db, link)
@@ -49,7 +47,7 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Error getting code:", err)
 	}
-	// Возвращаем ответ
+	
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"status": "success", "link": "` + "http://localhost:8000/" + output_code + `"}`))
 }
@@ -64,8 +62,8 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 // @Router /{link} [get]
 func GetLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(r)  // Get the variables from the request
-	link := vars["link"] // Extract the 'link' parameter
+	vars := mux.Vars(r)  
+	link := vars["link"] 
 	fmt.Println(w, "Link: %s", link)
 
 	output, err := database.GetLinkFromDB(database.InitDB("./example.db"), link)
